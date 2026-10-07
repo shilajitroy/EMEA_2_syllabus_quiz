@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Quiz results · Syllabus Studio{% endblock %}
+{% block content %}
+<section class="results-header">
+  <p class="eyebrow"><span class="eyebrow-line"></span> QUIZ COMPLETE</p>
+  <h1>Nice work showing up.</h1>
+  <p class="hero-description">Here's how you did on <strong>{{ quiz["syllabus_name"] }}</strong>.</p>
+  <div class="score-card">
+    <div class="score-ring" style="--score: {{ (score / total * 100)|round|int }}%">
+      <div><strong>{{ score }}</strong><span> / {{ total }}</span></div>
+    </div>
+    <div class="score-copy">
+      <span class="score-label">YOUR SCORE</span>
+      <strong>{{ (score / total * 100)|round|int }}% correct</strong>
+      <span>{{ score }} of {{ total }} questions answered correctly</span>
+    </div>
+  </div>
+</section>
+
+<section class="review-section">
+  <div class="review-heading">
+    <div>
+      <p class="eyebrow"><span class="eyebrow-line"></span> ANSWER REVIEW</p>
+      <h2>Learn from every question.</h2>
+    </div>
+    <form action="{{ url_for('new_quiz') }}" method="post">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+      <button class="button button-secondary" type="submit">New quiz <span aria-hidden="true">↗</span></button>
+    </form>
+  </div>
+
+  <div class="review-list">
+    {% for question in questions %}
+    <article class="review-card {% if question.is_correct %}review-correct{% else %}review-incorrect{% endif %}">
+      <div class="review-card-top">
+        <span class="question-number">{{ "%02d"|format(loop.index) }}</span>
+        <span class="review-status">{% if question.is_correct %}✓ Correct{% else %}↗ Review this one{% endif %}</span>
+      </div>
+      <h3>{{ question.question }}</h3>
+      <div class="review-answers">
+        {% for choice in question.choices %}
+        <div class="review-answer {% if loop.index0 == question.answer_index %}answer-correct{% elif loop.index0 == question.selected_index %}answer-selected-wrong{% endif %}">
+          <span class="review-answer-icon">{% if loop.index0 == question.answer_index %}✓{% elif loop.index0 == question.selected_index %}×{% else %}{{ "ABCD"[loop.index0] }}{% endif %}</span>
+          <span>{{ choice }}</span>
+          {% if loop.index0 == question.answer_index %}<span class="answer-tag">CORRECT ANSWER</span>
+          {% elif loop.index0 == question.selected_index %}<span class="answer-tag">YOUR ANSWER</span>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      <p class="explanation"><strong>Why:</strong> {{ question.explanation }}</p>
+      <details class="evidence-disclosure">
+        <summary><span aria-hidden="true">⌕</span> Supporting syllabus excerpt</summary>
+        <blockquote>{{ question.evidence_quote }}</blockquote>
+      </details>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

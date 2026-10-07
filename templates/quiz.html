@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Take your quiz · Syllabus Studio{% endblock %}
+{% block content %}
+<div class="quiz-layout">
+  <aside class="quiz-sidebar">
+    <a class="back-link" href="{{ url_for('index') }}">← <span>Home</span></a>
+    <div class="sidebar-label">YOUR QUIZ</div>
+    <h1 class="sidebar-title">{{ quiz["syllabus_name"] }}</h1>
+    <div class="sidebar-meta"><span class="status-dot"></span> {{ questions|length }} questions</div>
+    <div class="sidebar-rule"></div>
+    <p class="sidebar-tip"><span aria-hidden="true">✳</span> Take your time. Your answers are submitted together when you're ready.</p>
+    <form action="{{ url_for('new_quiz') }}" method="post" class="sidebar-new-form">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+      <button class="text-button" type="submit">Start a different quiz</button>
+    </form>
+  </aside>
+
+  <section class="quiz-main">
+    <div class="quiz-heading">
+      <div>
+        <p class="eyebrow"><span class="eyebrow-line"></span> PRACTICE SESSION</p>
+        <h2>Show what you know.</h2>
+      </div>
+      <span class="progress-pill">{{ questions|length }} questions</span>
+    </div>
+    <form action="{{ url_for('submit_quiz') }}" method="post" id="quiz-form">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+      {% for question in questions %}
+      <fieldset class="question-card" id="question-{{ loop.index }}">
+        <legend class="question-text"><span class="question-number">{{ "%02d"|format(loop.index) }}</span>{{ question.question }}</legend>
+        {% set question_index = loop.index0 %}
+        <div class="answer-list">
+          {% for choice in question.choices %}
+          <label class="answer-option">
+            <input type="radio" name="answer_{{ question_index }}" value="{{ loop.index0 }}">
+            <span class="radio-mark"></span>
+            <span>{{ choice }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        <details class="evidence-disclosure">
+          <summary><span aria-hidden="true">⌕</span> View syllabus excerpt</summary>
+          <blockquote>{{ question.evidence_quote }}</blockquote>
+        </details>
+      </fieldset>
+      {% endfor %}
+      <div class="submit-row">
+        <span>Your progress is saved when you submit.</span>
+        <button class="button button-primary" type="submit">Submit answers <span aria-hidden="true">↗</span></button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

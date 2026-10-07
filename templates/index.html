@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Build a quiz from your syllabus · Syllabus Studio{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="eyebrow-line"></span> STUDY SMARTER, NOT LONGER</p>
+    <h1>Your syllabus,<br><span>made testable.</span></h1>
+    <p class="hero-description">Turn course material into a focused practice quiz. Every question comes with a source excerpt from your document.</p>
+    <div class="trust-note">
+      <span class="trust-icon" aria-hidden="true">✓</span>
+      <span><strong>Grounded in your material</strong><br>No outside facts. No off-syllabus questions.</span>
+    </div>
+  </div>
+
+  <section class="upload-card" aria-labelledby="upload-title">
+    <div class="card-heading">
+      <div>
+        <p class="step-label">YOUR STUDY SESSION <span>01 / 01</span></p>
+        <h2 id="upload-title">Create a new quiz</h2>
+      </div>
+      <div class="card-icon" aria-hidden="true">✳</div>
+    </div>
+
+    <form action="{{ url_for('create_quiz') }}" method="post" enctype="multipart/form-data" id="upload-form">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+      <label class="drop-zone" for="syllabus">
+        <input id="syllabus" name="syllabus" type="file" accept=".pdf,.docx,.txt" required>
+        <span class="upload-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="drop-title" id="file-label">Drop your syllabus here</span>
+        <span class="drop-hint">or <span class="text-link">browse files</span></span>
+        <span class="file-types">PDF, DOCX, or TXT <span>·</span> Up to 10 MB</span>
+      </label>
+
+      <div class="form-row">
+        <label class="field-label" for="question-count">Number of questions</label>
+        <div class="select-wrap">
+          <select name="question_count" id="question-count">
+            {% for count in range(5, 16, 5) %}
+            <option value="{{ count }}" {% if count == 10 %}selected{% endif %}>{{ count }} questions</option>
+            {% endfor %}
+          </select>
+          <span aria-hidden="true">⌄</span>
+        </div>
+      </div>
+
+      <button class="button button-primary" type="submit">
+        <span>Generate my quiz</span>
+        <span aria-hidden="true">↗</span>
+      </button>
+    </form>
+
+    <p class="privacy-note"><span aria-hidden="true">⌑</span> Your document is used only to create this quiz.</p>
+  </section>
+</section>
+
+<section class="how-it-works" aria-label="How it works">
+  <div class="section-caption"><span>✳</span> A BETTER WAY TO REVIEW</div>
+  <div class="steps-grid">
+    <article class="step-card">
+      <span class="step-number">01</span>
+      <h3>Bring your syllabus</h3>
+      <p>Upload the course outline or notes you want to study.</p>
+    </article>
+    <article class="step-card">
+      <span class="step-number">02</span>
+      <h3>Practice with purpose</h3>
+      <p>Answer multiple-choice questions grounded in your material.</p>
+    </article>
+    <article class="step-card">
+      <span class="step-number">03</span>
+      <h3>Learn from review</h3>
+      <p>See your score, explanations, and supporting excerpts.</p>
+    </article>
+  </div>
+</section>
+<script>
+  document.getElementById("syllabus").addEventListener("change", function () {
+    document.getElementById("file-label").textContent =
+      this.files.length ? this.files[0].name : "Drop your syllabus here";
+  });
+</script>
+{% endblock %}
